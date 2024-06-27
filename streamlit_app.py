@@ -42,12 +42,12 @@ def generate_blog_ideas(text):
     )
     return response.choices[0].message.content.split(',')
 
-def generate_full_blog(idea, tone):
+def generate_full_blog(idea, tone, text):
     response = client.chat.completions.create(
         model="gpt-4",
         messages=[
             {"role": "system", "content": f"Eres un asistente til que escribe blogs de 10k caracteres y 7 subtítulos basados en ideas dadas. El tono de voz para inspirarte es: {tone}"},
-            {"role": "user", "content": f"Escribe un blog completo de más de 10 mil caracteres con 7 subtítulos basado en la siguiente idea en el idioma de la idea:\n\n{idea}"}
+            {"role": "user", "content": f"Escribe un blog completo de más de 10 mil caracteres con 7 subtítulos basado en la siguiente idea en el idioma de la idea:\n\n{idea}. Inspirado en el siguiente texto:\n\n{text[:2000]}"}
         ]
     )
     return response.choices[0].message.content
@@ -87,7 +87,7 @@ def main():
             for i, idea in enumerate(st.session_state.ideas):
                 if st.button(f"Idea {i+1}: {idea}"):
                     with st.spinner("Generando blog completo..."):
-                        full_blog = generate_full_blog(idea, tone)
+                        full_blog = generate_full_blog(idea, tone, st.session_state.text)
                         st.subheader(f"{idea}")
                         st.write(full_blog)
 
